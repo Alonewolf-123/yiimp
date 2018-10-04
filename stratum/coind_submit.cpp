@@ -44,14 +44,20 @@ bool coind_submitblock(YAAMP_COIND *coind, const char *block)
 	json_value *json = rpc_call(&coind->rpc, "submitblock", params);
 
 	free(params);
-	if(!json) return false;
+	if(!json) {
+		stratumlog("ERROR json is Null\n");
+		return false;
+	}
 
 	json_value *json_error = json_get_object(json, "error");
 	if(json_error && json_error->type != json_null)
 	{
 		const char *p = json_get_string(json_error, "message");
-		if(p) stratumlog("ERROR %s %s\n", coind->name, p);
 
+		if(p) 
+			stratumlog("ERROR %s %s\n", coind->name, p);
+		else
+			stratumlog("ERROR %s %s\n", coind->name, "no message");
 	//	job_reset();
 		json_value_free(json);
 
@@ -61,6 +67,8 @@ bool coind_submitblock(YAAMP_COIND *coind, const char *block)
 	json_value *json_result = json_get_object(json, "result");
 
 	bool b = json_result && json_result->type == json_null;
+
+	stratumlog("ERROR %s %s\n", coind->name, "json_result is null type");
 	json_value_free(json);
 
 	return b;
