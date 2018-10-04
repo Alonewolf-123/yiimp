@@ -19,14 +19,6 @@ void sha256t_hash(const char* input, char* output, uint32_t len)
 
 	SHA256_Init(&ctx_sha256);
 	SHA256_Update(&ctx_sha256, hash, 32);
-	SHA256_Final(hash, &ctx_sha256);
-	
-	SHA256_Init(&ctx_sha256);
-	SHA256_Update(&ctx_sha256, hash, 32);
-	SHA256_Final(hash, &ctx_sha256);
-
-	SHA256_Init(&ctx_sha256);
-	SHA256_Update(&ctx_sha256, hash, 32);
 	SHA256_Final((unsigned char*)output, &ctx_sha256);
 }
 
