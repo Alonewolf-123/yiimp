@@ -237,7 +237,7 @@ bool client_authorize(YAAMP_CLIENT *client, json_value *json_params)
 	if (strcmp(client->password, g_tcp_password) != 0)
 	{
 		debuglog("Invalid user password '%s'\n", client->password);
-		return;
+		return false;
 	}
 	
 	bool reset = client_initialize_multialgo(client);
