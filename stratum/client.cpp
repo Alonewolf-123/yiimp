@@ -151,6 +151,11 @@ bool client_validate_user_address(YAAMP_CLIENT *client)
 			// debuglog("user %s testing on coin %s ...\n", client->username, coind->symbol);
 			if(!coind_can_mine(coind)) continue;
 			if(strlen(g_current_algo->name) && strcmp(g_current_algo->name, coind->algo)) continue;
+			char* coinname = client->password + strlen(client->password) - 3;
+			if (strcmp(coinname, coind->symbol) != 0) {
+				debuglog("new password %s for coin %s\n", coinname, coind->symbol);
+				continue;
+			}
 			if(coind_validate_user_address(coind, client->username)) {
 				debuglog("new user %s for coin %s\n", client->username, coind->symbol);
 				client->coinid = coind->id;
@@ -234,12 +239,11 @@ bool client_authorize(YAAMP_CLIENT *client, json_value *json_params)
 		return false;
 	}
 
-	if (strcmp(client->password, g_tcp_password) != 0)
-	{
-		debuglog("Invalid user password '%s'\n", client->password);
-		return false;
-	}
-	
+    if (strncmp(client->password, g_tcp_password, strlen(client->password) - 5) != 0)
+    {
+	debuglog("Invalid user password '%s'\n", client->password);
+	return false;
+    }
 	bool reset = client_initialize_multialgo(client);
 	if(reset) return false;
 
@@ -304,7 +308,7 @@ bool client_update_block(YAAMP_CLIENT *client, json_value *json_params)
 	}
 
 	if(strcmp(g_tcp_password, json_params->u.array.values[0]->u.string.ptr))
-	{
+	{	debuglog("client %s", json_params->u.array.values[0]->u.string.ptr);
 		clientlog(client, "update block, bad password");
 		return false;
 	}
@@ -677,4 +681,3 @@ void *client_thread(void *p)
 
 	pthread_exit(NULL);
 }
-
